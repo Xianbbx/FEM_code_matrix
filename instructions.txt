@@ -1,0 +1,332 @@
+ELECTROSTRICTIVE FEM + PLASTICITY SIMULATION ENGINE (PYTHON)
+
+===========================================================
+PROJECT GOAL
+============
+
+Build a modular FEM simulation framework in Python to analyze:
+
+1. Electrostrictive actuation (ε = M E^2)
+2. Structural deformation (beam + plate)
+3. Plastic yielding using Von-Mises criterion
+4. Advanced multiphysics coupling
+5. Generate high-quality plots and animations
+
+Final goal:
+
+* Produce “presentation-level” simulations (plots, animations, surfaces)
+* Demonstrate physics understanding (elastic + plastic + electro-mechanical)
+
+===========================================================
+CORE PHYSICS MODEL
+==================
+
+1. TOTAL STRAIN
+
+ε_total = ε_mechanical + ε_electro
+
+Electrostrictive strain:
+ε_electro = M (V/t)^2
+
+2. STRESS-STRAIN RELATION
+
+σ = D (ε - ε_electro)
+
+3. FEM EQUATION
+
+K u = F_equivalent
+
+4. PLASTICITY (Von-Mises)
+
+σ_vm = sqrt(1/2 * [(σ1-σ2)^2 + (σ2-σ3)^2 + (σ3-σ1)^2])
+
+Yield condition:
+σ_vm >= σ_yield → plastic
+
+===========================================================
+PROJECT STRUCTURE (VERY IMPORTANT)
+==================================
+
+project_root/
+│
+├── main.py
+├── config.py
+│
+├── fem/
+│   ├── mesh.py
+│   ├── assembly.py
+│   ├── solver.py
+│   ├── elements/
+│   │   ├── beam.py
+│   │   ├── plate.py
+│
+├── physics/
+│   ├── electrostriction.py
+│   ├── elasticity.py
+│   ├── plasticity.py
+│
+├── simulations/
+│   ├── basic/
+│   │   ├── beam_bending.py
+│   │   ├── voltage_sweep.py
+│   │
+│   ├── intermediate/
+│   │   ├── bimetal.py
+│   │   ├── sinusoidal_actuation.py
+│   │   ├── boundary_effects.py
+│   │
+│   ├── advanced/
+│   │   ├── plate_2D.py
+│   │   ├── modal_analysis.py
+│   │   ├── plastic_yielding.py
+│   │   ├── optimization.py
+│
+├── visualization/
+│   ├── plots.py
+│   ├── animations.py
+│
+├── utils/
+│   ├── math_utils.py
+│   ├── stress_utils.py
+│
+└── results/
+├── plots/
+├── animations/
+
+===========================================================
+FILE-WISE IMPLEMENTATION
+========================
+
+---
+
+## config.py
+
+Store all parameters:
+
+E = 70e9
+nu = 0.33
+sigma_y = 250e6
+M = 1e-18
+thickness = 1e-3
+
+---
+
+## physics/electrostriction.py
+
+def electro_strain(V, t, M):
+return M * (V/t)**2
+
+def spatial_electro_strain(x, L, V, t, M):
+return M * (V/t)**2 * np.sin(np.pi * x / L)
+
+---
+
+## physics/plasticity.py
+
+def von_mises(stress_tensor):
+s1, s2, s3 = stress_tensor
+return np.sqrt(0.5*((s1-s2)**2 + (s2-s3)**2 + (s3-s1)**2))
+
+def check_yield(sigma_vm, sigma_y):
+return sigma_vm >= sigma_y
+
+---
+
+## fem/elements/beam.py
+
+Define beam stiffness matrix
+
+K_e = (E*I/L^3) * matrix
+
+Also compute:
+
+* strain from displacement
+* stress from strain
+
+---
+
+## fem/assembly.py
+
+Loop over elements:
+
+* assemble global K
+* assemble force vector
+
+---
+
+## fem/solver.py
+
+Apply boundary conditions
+Solve:
+
+u = solve(K, F)
+
+---
+
+## utils/stress_utils.py
+
+Convert:
+
+* strain → stress
+* principal stresses
+* deviatoric stress
+
+σ = σ_vol + σ_dev
+
+σ_vol = (1/3) tr(σ) I
+σ_dev = σ - σ_vol
+
+---
+
+## visualization/plots.py
+
+Functions:
+
+plot_beam_deflection()
+plot_voltage_vs_displacement()
+plot_stress_distribution()
+plot_von_mises_field()
+
+---
+
+## visualization/animations.py
+
+Animate:
+
+* deformation vs voltage
+* time evolution
+* mode shapes
+
+===========================================================
+SIMULATIONS TO IMPLEMENT
+========================
+
+========================
+BASIC LEVEL
+===========
+
+1. Beam bending (cantilever)
+
+   * electrostriction only
+   * plot deformation
+
+2. Voltage sweep
+
+   * displacement vs V^2
+   * validate theory
+
+3. Thickness variation
+
+   * t vs displacement
+
+========================
+INTERMEDIATE LEVEL
+==================
+
+4. Bimetal strip
+
+   * different E for layers
+   * mismatch strain → bending
+
+5. Sinusoidal actuation
+   ε(x) = M (V/t)^2 sin(πx/L)
+
+   → produce wave shapes
+
+6. Boundary condition study
+
+   * clamped-free
+   * clamped-clamped
+   * simply supported
+
+========================
+ADVANCED LEVEL
+==============
+
+7. 2D Plate FEM
+
+   * triangular elements
+   * simulate docking plate
+
+8. Modal analysis
+   Solve:
+   K u = λ M u
+
+   → frequencies and mode shapes
+
+9. Plastic yielding simulation
+
+   * compute stress tensor
+   * evaluate Von-Mises
+   * highlight yield regions
+
+10. Distortion energy visualization
+    φ_distortion ∝ [(σ1-σ2)^2 + ...]
+
+11. Yield surface plotting
+
+* 3D cylinder in σ-space
+* π-plane projection
+
+12. Optimization
+    maximize displacement
+    minimize stress
+
+===========================================================
+CRAZY PLOTS (IMPORTANT FOR PPT)
+===========================================================
+
+1. Deformation animation (beam bending)
+2. Voltage vs displacement curve (quadratic)
+3. Stress contour along beam
+4. Von-Mises stress heatmap
+5. Yield surface (3D cylinder)
+6. π-plane circular yield plot
+7. Sinusoidal deformation evolution
+8. Mode shapes animation
+9. Plastic zone growth animation
+10. Energy vs voltage plots
+
+===========================================================
+ADVANCED ANALYSIS IDEAS
+=======================
+
+1. Compare electrostriction vs thermal strain analogy
+2. Show that hydrostatic stress does NOT cause yielding
+3. Plot:
+
+σ_total = σ_vol + σ_dev
+
+→ demonstrate plasticity depends only on σ_dev
+
+4. Energy-based validation:
+   distortion energy = yield trigger
+
+5. Multi-actuator system
+   → simulate docking alignment correction
+
+===========================================================
+FINAL PRESENTATION STORYLINE
+============================
+
+1. Introduce electrostriction
+2. Show FEM formulation
+3. Validate with beam
+4. Add complexity (bimetal, sinusoidal)
+5. Introduce plasticity
+6. Show yield surfaces
+7. Show real system simulation
+8. Conclude feasibility for micrometer alignment
+
+===========================================================
+EXTREME BONUS (IF TIME)
+=======================
+
+* Build GUI using matplotlib sliders
+* Real-time voltage control simulation
+* Compare with experimental data
+* Export results as GIFs
+
+===========================================================
+
+# END OF PLAN
