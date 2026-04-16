@@ -266,7 +266,7 @@ $$V_{\mathrm{required}} = t \sqrt{\frac{\delta_{\mathrm{target}}}{C \cdot M}}$$
 
 The result is fed back into the FEM for **verification**, and the deflection profile is plotted against the target line.
 
-A yield check is also performed: if $V_{\mathrm{required}}$ causes yielding, a red warning is shown; otherwise a green success message.
+A yield check is also performed: if $V_{\mathrm{required}}$ causes yielding, a red warning is shown; otherwise a green success messag   e.
 
 | Slider | Purpose |
 |---|---|

@@ -40,7 +40,7 @@ n_modes  = 6
 E_layer1 = 70e9    # Al
 E_layer2 = 200e9   # Steel
 alpha_mismatch = 12e-6   # CTE mismatch analogue [1/K]
-delta_T = 50.0           # temperature-like load
+delta_T = 0.001           # temperature-like load
 
 # ---- Output directories ------------------------------------
 RESULTS_DIR    = "results"
